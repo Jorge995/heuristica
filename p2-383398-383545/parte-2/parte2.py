@@ -145,22 +145,31 @@ def expandirNodo(nodo, costes, numeroMaximoPasajeros, posicionColegios):
 # Estado inicial
 estadoInicial = Nodo(([posicionInicialBus, 0], ninios, numeroNiniosNoEntregados), 0, 0, None)
 listaAbierta.append(estadoInicial)
+nodoFinal = None
 while len(listaAbierta) > 0 and exito == False:
   print(listaAbierta[0].g)
   for i in range(len(listaAbierta)):
     if listaAbierta[i] not in listaCerrada:
       primerNodo = listaAbierta[i]
       listaAbierta.remove(listaAbierta[i])
+    #else:
+    #  listaAbierta.remove(listaAbierta[i])
   if primerNodo.estado[0][0] == posicionInicialBus and primerNodo.estado[2] == 0:
     exito == True
+    nodoFinal = primerNodo
   else:
     nodosSucesores = expandirNodo(primerNodo, costes, numeroMaximoPasajeros, posicionColegios)
     listaCerrada.append(primerNodo)
     nodosSucesores.sort(key = lambda nodos: nodos.g, reverse = False)
     listaAbierta = nodosSucesores + listaAbierta
     listaAbierta.sort(key = lambda nodos: nodos.g, reverse = False)
-
-    
+solucion = []
+while nodoFinal.padre != None:
+  solucion.append(nodoFinal)
+  nodoFinal = nodoFinal.padre
+solucion = solucion.reverse()
+for i in range(len(solucion)):
+  print(solucion[i].estado)
 
 print(estadoInicial)
 nodosExpandidos = expandirNodo(estadoInicial, costes, numeroMaximoPasajeros, posicionColegios)
