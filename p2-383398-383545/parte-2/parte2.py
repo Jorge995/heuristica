@@ -133,7 +133,13 @@ def calcularEstadoSiguiente(estado, accion, posicionColegios):
     nuevoEstado = ([accion[0], estado[0][1]], listaNinios, estado[2])
   return nuevoEstado
 
-def expandirNodo(nodo, numeroMaximoPasajeros, posicionColegios)
+def expandirNodo(nodo, costes, numeroMaximoPasajeros, posicionColegios):
+  nodosSucesores = []
+  acciones = acciones(nodo.estado, costes, numeroMaximoPasajeros)
+  for i in range(len(acciones)):
+    nuevoNodo = Nodo(calcularEstadoSiguiente(nodo.estado, acciones[i], posicionColegios), nodo.g + acciones[i][1], 0, nodo)
+    nodosSucesores.append(nuevoNodo)
+    
 # Estado inicial
 estadoInicial = Nodo(([posicionInicialBus, 0], ninios, numeroNiniosNoEntregados), 0, 0, None)
 listaAbierta.append(estadoInicial)
