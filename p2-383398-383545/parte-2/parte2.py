@@ -6,6 +6,16 @@ posicionColegios = []
 numeroNiniosNoEntregados = 0
 ninios = []
 numParadas = 0
+listaAbierta = []
+listaCerrada = []
+exito = False
+
+class Nodo:
+    def __init__(self, estado, g, h, padre):
+        self.estado = estado
+        self.g = g
+		self.h = h
+        self.padre = padre
 
 # Leemos el fichero de entrada por filas
 f = open(sys.argv[1])
@@ -121,12 +131,9 @@ def calcularEstadoSiguiente(estado, accion, posicionColegios):
     nuevoEstado = ([estado[0][0], estado[0][1]-accion[1]], listaNinios, estado[2]-accion[1])
   else:
     nuevoEstado = ([accion[0], estado[0][1]], listaNinios, estado[2])
-  return nuevoEstado	  
+  return nuevoEstado
 
+def expandirNodo(nodo, numeroMaximoPasajeros, posicionColegios)
 # Estado inicial
-#estadoInicial = ([posicionInicialBus, 0], ninios, numeroNiniosNoEntregados)
-estadoInicial = (["P6", 3], [["Bus","C1"],["Bus","C1"],["Bus","C1"]], 3)
-accionesPochas = acciones(estadoInicial, costes, numeroMaximoPasajeros)
-print(accionesPochas)
-nuevoEstado = calcularEstadoSiguiente(estadoInicial, accionesPochas[0], posicionColegios)
-print(nuevoEstado)
+estadoInicial = Nodo(([posicionInicialBus, 0], ninios, numeroNiniosNoEntregados), 0, 0, None)
+listaAbierta.append(estadoInicial)
