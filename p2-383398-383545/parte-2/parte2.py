@@ -139,7 +139,8 @@ def expandirNodo(nodo, costes, numeroMaximoPasajeros, posicionColegios):
   for i in range(len(acciones)):
     nuevoNodo = Nodo(calcularEstadoSiguiente(nodo.estado, acciones[i], posicionColegios), nodo.g + acciones[i][1], 0, nodo)
     nodosSucesores.append(nuevoNodo)
-    
+  return nodosSucesores
 # Estado inicial
 estadoInicial = Nodo(([posicionInicialBus, 0], ninios, numeroNiniosNoEntregados), 0, 0, None)
-listaAbierta.append(estadoInicial)
+nodosExpandidos = expandirNodo(estadoInicial, costes, numeroMaximoPasajeros, posicionColegios)
+print(nodosExpandidos)
