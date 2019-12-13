@@ -14,7 +14,7 @@ class Nodo:
     def __init__(self, estado, g, h, padre):
         self.estado = estado
         self.g = g
-		self.h = h
+        self.h = h
         self.padre = padre
 
 # Leemos el fichero de entrada por filas
@@ -135,12 +135,15 @@ def calcularEstadoSiguiente(estado, accion, posicionColegios):
 
 def expandirNodo(nodo, costes, numeroMaximoPasajeros, posicionColegios):
   nodosSucesores = []
-  acciones = acciones(nodo.estado, costes, numeroMaximoPasajeros)
-  for i in range(len(acciones)):
-    nuevoNodo = Nodo(calcularEstadoSiguiente(nodo.estado, acciones[i], posicionColegios), nodo.g + acciones[i][1], 0, nodo)
+  accionesPosibles = acciones(nodo.estado, costes, numeroMaximoPasajeros)
+  for i in range(len(accionesPosibles)):
+    nuevoEstado = calcularEstadoSiguiente(nodo.estado, accionesPosibles[i], posicionColegios)
+    nuevoNodo = Nodo(nuevoEstado, nodo.g + accionesPosibles[i][1], 0, nodo)
     nodosSucesores.append(nuevoNodo)
   return nodosSucesores
+  
 # Estado inicial
 estadoInicial = Nodo(([posicionInicialBus, 0], ninios, numeroNiniosNoEntregados), 0, 0, None)
+print(estadoInicial)
 nodosExpandidos = expandirNodo(estadoInicial, costes, numeroMaximoPasajeros, posicionColegios)
 print(nodosExpandidos)
