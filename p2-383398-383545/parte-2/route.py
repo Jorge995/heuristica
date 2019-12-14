@@ -148,32 +148,36 @@ def expandirNodo(nodo):
     nuevoNodo = None
     listaPocha = []
     nuevoEstado = calcularEstadoSiguiente(copy.deepcopy(nodo).estado, accionesPosibles[i])
-    nuevoNodo = Nodo(([nuevoEstado[0][0], nuevoEstado[0][1]], nuevoEstado[1], nuevoEstado[2]), nodo.g + accionesPosibles[i][1], 0, nodo)
+    nuevoNodo = Nodo(([nuevoEstado[0][0], nuevoEstado[0][1]], nuevoEstado[1], nuevoEstado[2]), nodo.g + accionesPosibles[i][1], heuristica(nuevoEstado), nodo)
     nodosSucesores.append(nuevoNodo)
   return nodosSucesores
 
 def heuristica(estado):
   if nombreHeuristica == "heuristica1":
     return estado[2]
+  contador = 0
+  for i in range(len(estado[1])):
+     if estado[1][i] != "Bus" and estado[1][i] != "Entregado":
+       contador = contador + 1
+  return contador * 2
 
 def astar(nodoInicial):
   solucion = []
   listaAbierta = []
   listaCerrada = []
   global nodosExpandidos
+  global costeTotal
   exito = False
   listaAbierta.append(nodoInicial)
   nodoFinal = None
   while len(listaAbierta) > 0 and exito == False:
     primerNodo = None
-    i = 0
-    while primerNodo == None:
-      if listaAbierta[i].estado not in listaCerrada:
-        primerNodo = listaAbierta[i]
-        listaAbierta.remove(listaAbierta[i])
+    while primerNodo == None and len(listaAbierta) > 0:
+      if listaAbierta[0].estado not in listaCerrada:
+        primerNodo = listaAbierta[0]
+        listaAbierta.remove(listaAbierta[0])
       else:
-        listaAbierta.remove(listaAbierta[i])
-      i = i + 1
+        listaAbierta.remove(listaAbierta[0])
     if primerNodo.estado[0][0] == posicionInicialBus and primerNodo.estado[2] == 0:
       exito = True
       nodoFinal = primerNodo
@@ -181,14 +185,15 @@ def astar(nodoInicial):
       nodosSucesores = expandirNodo(primerNodo)
       nodosExpandidos += 1
       listaCerrada.append(primerNodo.estado)
-      nodosSucesores.sort(key = lambda nodos: nodos.g, reverse = False)
+      nodosSucesores.sort(key = lambda nodos: nodos.f, reverse = False)
       listaAbierta = nodosSucesores + listaAbierta
-      listaAbierta.sort(key = lambda nodos: nodos.g, reverse = False)
+      listaAbierta.sort(key = lambda nodos: nodos.f, reverse = False)
   if exito == True:
     while nodoFinal.padre != None:
       solucion.append(nodoFinal)
       nodoFinal = nodoFinal.padre
     solucion.append(nodoFinal)
+    costeTotal = solucion[0].g
     solucion.reverse()
     for i in range(len(solucion)):
       print(solucion[i].estado)
@@ -199,10 +204,14 @@ def astar(nodoInicial):
 
 # Estado inicial
 nodoInicial = Nodo(([posicionInicialBus, 0], ninios, numeroNiniosNoEntregados), 0, 0, None)
-print(paradasVisitadas)
 tiempoInicial = time()
 solucion = astar(nodoInicial)
 tiempoFinal = time()
 tiempoEjecucion = tiempoFinal - tiempoInicial
+for i in range(1, len(solucion)):
+  if solucion[i].estado[0][0] != solucion[i-1].estado[0][0]:
+    paradasVisitadas = paradasVisitadas + 1
 print(nodosExpandidos)
-print(tiempoEjecucion) 
+print(tiempoEjecucion)
+print(costeTotal)
+print(paradasVisitadas)
