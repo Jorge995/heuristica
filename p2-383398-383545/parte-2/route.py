@@ -155,11 +155,6 @@ def expandirNodo(nodo):
 def heuristica(estado):
   if nombreHeuristica == "heuristica1":
     return estado[2]
-  contador = 0
-  for i in range(len(estado[1])):
-     if estado[1][i] != "Bus" and estado[1][i] != "Entregado":
-       contador = contador + 1
-  return contador * 2
 
 def astar(nodoInicial):
   solucion = []
@@ -211,7 +206,53 @@ tiempoEjecucion = tiempoFinal - tiempoInicial
 for i in range(1, len(solucion)):
   if solucion[i].estado[0][0] != solucion[i-1].estado[0][0]:
     paradasVisitadas = paradasVisitadas + 1
+file = open(sys.argv[1]+".statistics","w")
+file.write("Tiempo total: "+str(tiempoEjecucion)+" s\n")
+file.write("Coste total: "+str(costeTotal)+"\n")
+file.write("Paradas visitadas: "+str(paradasVisitadas)+"\n")
+file.write("Nodos expandidos: "+str(nodosExpandidos)+"\n")
+file.close()
 print(nodosExpandidos)
 print(tiempoEjecucion)
 print(costeTotal)
 print(paradasVisitadas)
+
+cadena = solucion[0].estado[0][0]
+for i in range(1, len(solucion)):
+  listaAuxiliarDejar = []
+  listaAuxiliarRecoger = []
+  dejar = False
+  recoger = False
+  for j in range(len(posicionColegios)):
+    listaAuxiliarDejar.append([0, "C"+str(j+1)])
+    listaAuxiliarRecoger.append([0, "C"+str(j+1)])
+  if solucion[i].estado[0][0] != solucion[i-1].estado[0][0]:
+    cadena = cadena + " -> "+solucion[i].estado[0][0]
+  else:
+    for k in range(len(solucion[i].estado[1])):
+      if solucion[i].estado[1][k][0] != solucion[i-1].estado[1][k][0] and solucion[i].estado[1][k][0] == "Entregado":
+        dejar = True
+        listaAuxiliarDejar[int(solucion[i].estado[1][k][1][1])-1][0] += 1
+      if solucion[i].estado[1][k][0] != solucion[i-1].estado[1][k][0] and solucion[i].estado[1][k][0] == "Bus":
+        recoger = True
+        listaAuxiliarRecoger[int(solucion[i].estado[1][k][1][1])-1][0] += 1
+  if dejar == True:
+    cadena = cadena+" (B: "
+    for j in range(len(listaAuxiliarDejar)):
+      if listaAuxiliarDejar[j][0] > 0:
+        cadena = cadena + str(listaAuxiliarDejar[j][0])+" "+listaAuxiliarDejar[j][1]+", "
+    cadena = cadena[0:len(cadena)-2]
+    cadena = cadena + ")"
+  if recoger == True:
+    cadena = cadena+" (S: "
+    for j in range(len(listaAuxiliarRecoger)):
+      if listaAuxiliarRecoger[j][0] > 0:
+        cadena = cadena + str(listaAuxiliarRecoger[j][0])+" "+listaAuxiliarRecoger[j][1]+", "
+    cadena = cadena[0:len(cadena)-2]
+    cadena = cadena + ")"
+file2 = open(sys.argv[1]+".output","w")
+f = open(sys.argv[1])
+file2.write(f.read())
+file2.write(cadena)
+file2.close()
+f.close()
