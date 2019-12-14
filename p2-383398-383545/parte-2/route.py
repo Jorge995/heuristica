@@ -7,15 +7,17 @@ posicionColegios = []
 numeroNiniosNoEntregados = 0
 ninios = []
 numParadas = 0
-listaAbierta = []
-listaCerrada = []
-exito = False
+nombreHeuristica = sys.argv[2]
+paradasVisitadas = 1
+nodosExpandidos = 0
+costeTotal = 0
 
 class Nodo:
     def __init__(self, estado, g, h, padre):
         self.estado = estado
         self.g = g
         self.h = h
+        self.f = g+h
         self.padre = padre
 
 # Leemos el fichero de entrada por filas
@@ -67,7 +69,7 @@ numeroNiniosNoEntregados = len(ninios)
 print(numeroNiniosNoEntregados)
 
 # Esta funcion devuelve una lista con las acciones que podrian ejecutarse en el estado pasado por parametro
-def acciones(estado, costes, numeroMaximoPasajeros):
+def acciones(estado):
   acciones=[]
   posicionActual = int(estado[0][0][1])
   contadorNiniosRecoger = 0
@@ -104,11 +106,10 @@ def acciones(estado, costes, numeroMaximoPasajeros):
 	    contadorNiniosDejar = contadorNiniosDejar + 1
   if contadorNiniosDejar > 0:
     acciones.append(["Dejar", contadorNiniosDejar])
-
   return acciones
 
 # Esta funcion devuelve el estado que resulta de aplicar la accion que se pasa por parametro sobre el estado que tambien se pasa por parametro
-def calcularEstadoSiguiente(estado, accion, posicionColegios):
+def calcularEstadoSiguiente(estado, accion):
   listaNiniosDejar = []
   listaNiniosRecoger = []
   for i in range(len(estado[1])):
@@ -138,44 +139,65 @@ def calcularEstadoSiguiente(estado, accion, posicionColegios):
     nuevoEstado = ([accion[0], estado[0][1]], estado[1], estado[2])
   return nuevoEstado
 
-def expandirNodo(nodo, costes, numeroMaximoPasajeros, posicionColegios):
+def expandirNodo(nodo):
   nodosSucesores = []
-  accionesPosibles = acciones(copy.deepcopy(nodo).estado, costes, numeroMaximoPasajeros)
+  accionesPosibles = acciones(copy.deepcopy(nodo).estado)
   for i in range(len(accionesPosibles)):
     nuevoEstado = None
     nuevoNodo = None
     listaPocha = []
-    nuevoEstado = calcularEstadoSiguiente(copy.deepcopy(nodo).estado, accionesPosibles[i], posicionColegios)
+    nuevoEstado = calcularEstadoSiguiente(copy.deepcopy(nodo).estado, accionesPosibles[i])
     nuevoNodo = Nodo(([nuevoEstado[0][0], nuevoEstado[0][1]], nuevoEstado[1], nuevoEstado[2]), nodo.g + accionesPosibles[i][1], 0, nodo)
     nodosSucesores.append(nuevoNodo)
   return nodosSucesores
 
-# Estado inicial
-estadoInicial = Nodo(([posicionInicialBus, 0], ninios, numeroNiniosNoEntregados), 0, 0, None)
-solucion = []
-listaAbierta.append(estadoInicial)
-nodoFinal = None
-while len(listaAbierta) > 0 and exito == False:
-  primerNodo = None
-  i = 0
-  while primerNodo == None:
-    if listaAbierta[i].estado not in listaCerrada:
-      primerNodo = listaAbierta[i]
-      listaAbierta.remove(listaAbierta[i])
-    i = i + 1
-  if primerNodo.estado[0][0] == posicionInicialBus and primerNodo.estado[2] == 0:
-    exito = True
-    nodoFinal = primerNodo
+def heuristica(estado):
+  if nombreHeuristica == "heuristica1":
+    return estado[2]
+
+def astar(nodoInicial):
+  solucion = []
+  listaAbierta = []
+  listaCerrada = []
+  global nodosExpandidos
+  exito = False
+  listaAbierta.append(nodoInicial)
+  nodoFinal = None
+  while len(listaAbierta) > 0 and exito == False:
+    primerNodo = None
+    i = 0
+    while primerNodo == None:
+      if listaAbierta[i].estado not in listaCerrada:
+        primerNodo = listaAbierta[i]
+        listaAbierta.remove(listaAbierta[i])
+      else:
+        listaAbierta.remove(listaAbierta[i])
+      i = i + 1
+    if primerNodo.estado[0][0] == posicionInicialBus and primerNodo.estado[2] == 0:
+      exito = True
+      nodoFinal = primerNodo
+    else:
+      nodosSucesores = expandirNodo(primerNodo)
+      nodosExpandidos += 1
+      listaCerrada.append(primerNodo.estado)
+      nodosSucesores.sort(key = lambda nodos: nodos.g, reverse = False)
+      listaAbierta = nodosSucesores + listaAbierta
+      listaAbierta.sort(key = lambda nodos: nodos.g, reverse = False)
+  if exito == True:
+    while nodoFinal.padre != None:
+      solucion.append(nodoFinal)
+      nodoFinal = nodoFinal.padre
+    solucion.append(nodoFinal)
+    solucion.reverse()
+    for i in range(len(solucion)):
+      print(solucion[i].estado)
   else:
-    nodosSucesores = expandirNodo(primerNodo, costes, numeroMaximoPasajeros, posicionColegios)
-    listaCerrada.append(primerNodo.estado)
-    nodosSucesores.sort(key = lambda nodos: nodos.g, reverse = False)
-    listaAbierta = nodosSucesores + listaAbierta
-    listaAbierta.sort(key = lambda nodos: nodos.g, reverse = False)
-while nodoFinal.padre != None:
-  solucion.append(nodoFinal)
-  nodoFinal = nodoFinal.padre
-solucion.append(nodoFinal)
-solucion.reverse()
-for i in range(len(solucion)):
-  print(solucion[i].estado)
+    solucion = None
+    print("No hay solucion")
+  return solucion
+
+# Estado inicial
+nodoInicial = Nodo(([posicionInicialBus, 0], ninios, numeroNiniosNoEntregados), 0, 0, None)
+print(paradasVisitadas)
+solucion = astar(nodoInicial)
+print(nodosExpandidos)
