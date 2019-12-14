@@ -155,6 +155,14 @@ def expandirNodo(nodo):
 def heuristica(estado):
   if nombreHeuristica == "heuristica1":
     return estado[2]
+  if nombreHeuristica == "heuristica2":
+    contador = 0
+    for i in range(len(estado[1])):
+      if estado[1][i][0] != "Bus" and estado[1][i][0] != "Entregado":
+        contador = contador + 1
+    return contador + estado[2]
+  else:
+    return 0
 
 def astar(nodoInicial):
   solucion = []
