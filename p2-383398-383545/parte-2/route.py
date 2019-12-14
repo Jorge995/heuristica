@@ -1,5 +1,6 @@
 import sys
 import copy
+from time import time #importamos la funcion time para medir los tiempos
 
 posicionInicialBus = ""
 numeroMaximoPasajeros = 0
@@ -199,5 +200,9 @@ def astar(nodoInicial):
 # Estado inicial
 nodoInicial = Nodo(([posicionInicialBus, 0], ninios, numeroNiniosNoEntregados), 0, 0, None)
 print(paradasVisitadas)
+tiempoInicial = time()
 solucion = astar(nodoInicial)
+tiempoFinal = time()
+tiempoEjecucion = tiempoFinal - tiempoInicial
 print(nodosExpandidos)
+print(tiempoEjecucion)
