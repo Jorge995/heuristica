@@ -9,10 +9,13 @@ problem.addVariables(['J1', 'J2','L1', 'L2', 'A1','A2'], ['M', 'CN', 'CS', 'LL',
 problem.addVariables(['CN1','CN2','LL1','LL2','I1','I2','EF'], ['Lun1', 'Lun2', 'Lun3', 'Mar1', 'Mar2','Mar3','Mier1','Mier2','Mier3','Jue1','Jue2'])
 problem.addVariables(['M1','M2'], ['Lun1','Mar1','Mier1','Jue1'])
 problem.addVariables(['CS1','CS2'], ['Lun3','Mar3','Mier3','Jue2'])
+
+#Restricciones profesores
 problem.addConstraint(AllDifferentConstraint(), ('J1', 'J2','L1', 'L2', 'A1','A2'))
 
+# Lucıa solo se encargara de Ciencias Sociales, si Andrea se encarga de Educacion Fısica.
 def LuciayAndrea(a, b, c, d):
-    if a=='EF' or c=='EF': 
+    if a=='EF' or c=='EF':
         if b=='CS' or d=='CS':
             return True
         else: return False
@@ -22,9 +25,11 @@ def LuciayAndrea(a, b, c, d):
 
 problem.addConstraint(LuciayAndrea, ('A1', 'L1', 'A2', 'L2'))
 
+#Restriccion asignaturas
 problem.addConstraint(AllDifferentConstraint(), ('M1','M2','CN1','CN2','CS1','CS2','LL1','LL2','I1','I2','EF'))
 
-def restriccion1(a,b):
+# las 2 horas dedicadas a Ciencias de la Naturaleza deben impartirse de forma consecutiva el mismo dıa.
+def cienciasNaturalesConsecutiva(a,b):
   if a=='Lun2' or b=='Lun2':
     if a=='Lun1' or b=='Lun1' or a=='Lun3' or b=='Lun3':
       return True
@@ -43,9 +48,10 @@ def restriccion1(a,b):
     else: return False
   return False
 
-problem.addConstraint(restriccion1,('CN1','CN2')) 
+problem.addConstraint(cienciasNaturalesConsecutiva,('CN1','CN2'))
 
-def restriccion2 (a, b, c ,d, e, f):
+# La materia de Matematicas no puede impartirse el mismo dıa que Ciencias de la Naturaleza e Ingles.
+def matematicasDistintoDeCNeI(a, b, c ,d, e, f):
   if a=='Lun1' or b=='Lun1':
     if c=='Lun2' or c=='Lun3' or d=='Lun2' or d=='Lun3' or e=='Lun2' or e=='Lun3' or f=='Lun2' or f=='Lun3':
       return False
@@ -59,20 +65,19 @@ def restriccion2 (a, b, c ,d, e, f):
     if c=='Jue2' or d=='Jue2' or e=='Jue2' or f=='Jue2':
       return False
   return True
-    
-problem.addConstraint(restriccion2, ('M1','M2','CN1','CN2','I1','I2'))
 
-def restriccion3(a,b,c,d):
+problem.addConstraint(matematicasDistintoDeCNyI, ('M1','M2','CN1','CN2','I1','I2'))
+
+#Restriccion que mezcla asignaturas y profesores
+
+# Juan no quiere encargarse de Ciencias de la Naturaleza o de Ciencias Sociales, si algunas de sus horas se imparte a primera hora los lunes y jueves.
+def restriccionJuanCNyCS(a,b,c,d):
   if a=='Lun1' or b=='Lun1' or a=='Jue1' or b=='Jue1':
     if c=='CN' or d=='CN':
       return False
     else: return True
   return True
-  
-problem.addConstraint(restriccion3, ('CN1','CN2','J1','J2'))
+
+problem.addConstraint(restriccionJuanCNyCS, ('CN1','CN2','J1','J2'))
 
 print(len(problem.getSolutions()))
-
-  
-  
-
