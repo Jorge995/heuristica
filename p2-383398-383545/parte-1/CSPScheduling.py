@@ -11,6 +11,8 @@ problem.addVariables(['M1','M2'], ['Lun1','Mar1','Mier1','Jue1'])
 problem.addVariables(['CS1','CS2'], ['Lun3','Mar3','Mier3','Jue2'])
 
 #Restricciones profesores
+
+#Cada profesor imparte 2 asignaturas y son diferentes a las del resto de profesores
 problem.addConstraint(AllDifferentConstraint(), ('J1', 'J2','L1', 'L2', 'A1','A2'))
 
 # Lucıa solo se encargara de Ciencias Sociales, si Andrea se encarga de Educacion Fısica.
@@ -26,6 +28,8 @@ def LuciayAndrea(a, b, c, d):
 problem.addConstraint(LuciayAndrea, ('A1', 'L1', 'A2', 'L2'))
 
 #Restriccion asignaturas
+
+#Cada asignatura tiene dos horas semanales y solo se puede dar una asignatura cada hora
 problem.addConstraint(AllDifferentConstraint(), ('M1','M2','CN1','CN2','CS1','CS2','LL1','LL2','I1','I2','EF'))
 
 # las 2 horas dedicadas a Ciencias de la Naturaleza deben impartirse de forma consecutiva el mismo dıa.

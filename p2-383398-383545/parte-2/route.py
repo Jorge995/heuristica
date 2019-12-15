@@ -249,7 +249,7 @@ for i in range(1, len(solucion)):
     cadena = cadena + ")"
 file2 = open(sys.argv[1]+".output","w")
 f = open("ejemplos/"+sys.argv[1])
-file2.write(f.read())
+file2.write(f.read()+"\n")
 file2.write(cadena)
 file2.close()
 f.close()
