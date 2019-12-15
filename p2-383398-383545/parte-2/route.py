@@ -22,7 +22,7 @@ class Nodo:
         self.padre = padre
 
 # Leemos el fichero de entrada por filas
-f = open(sys.argv[1])
+f = open("ejemplos/"+sys.argv[1])
 datosFichero = []
 string = f.readline()
 while string!="":
@@ -50,14 +50,12 @@ for i in range(1, numParadas+1):
     if datosFichero[i][j] != "--":
    	  datosFichero[i][j] = int(datosFichero[i][j])
     costes[i-1].append(datosFichero[i][j])
-print(costes)
 
 # Guardamos los datos de los ninios
 datosNinios = " ".join(datosFichero[-2])
 niniosPorParada = datosNinios.split(";")
 for i in range(len(niniosPorParada)):
   niniosPorParadaSplit = niniosPorParada[i].split(":")
-  print("Hola", niniosPorParadaSplit)
   niniosSeparados = niniosPorParadaSplit[1].split(",")
   for j in range(len(niniosSeparados)):
     niniosSeparadoSplit = niniosSeparados[j].split()
@@ -65,9 +63,7 @@ for i in range(len(niniosPorParada)):
     while numeroNinios!=0:
       ninios.append([niniosPorParadaSplit[0][len(niniosPorParadaSplit[0])-2:len(niniosPorParadaSplit[0])],niniosSeparadoSplit[1]])
       numeroNinios = numeroNinios-1
-print(ninios)
 numeroNiniosNoEntregados = len(ninios)
-print(numeroNiniosNoEntregados)
 
 # Esta funcion devuelve una lista con las acciones que podrian ejecutarse en el estado pasado por parametro
 def acciones(estado):
@@ -198,11 +194,8 @@ def astar(nodoInicial):
     solucion.append(nodoFinal)
     costeTotal = solucion[0].g
     solucion.reverse()
-    for i in range(len(solucion)):
-      print(solucion[i].estado)
   else:
     solucion = None
-    print("No hay solucion")
   return solucion
 
 # Estado inicial
@@ -220,10 +213,6 @@ file.write("Coste total: "+str(costeTotal)+"\n")
 file.write("Paradas visitadas: "+str(paradasVisitadas)+"\n")
 file.write("Nodos expandidos: "+str(nodosExpandidos)+"\n")
 file.close()
-print(nodosExpandidos)
-print(tiempoEjecucion)
-print(costeTotal)
-print(paradasVisitadas)
 
 cadena = solucion[0].estado[0][0]
 for i in range(1, len(solucion)):
@@ -259,7 +248,7 @@ for i in range(1, len(solucion)):
     cadena = cadena[0:len(cadena)-2]
     cadena = cadena + ")"
 file2 = open(sys.argv[1]+".output","w")
-f = open(sys.argv[1])
+f = open("ejemplos/"+sys.argv[1])
 file2.write(f.read())
 file2.write(cadena)
 file2.close()
